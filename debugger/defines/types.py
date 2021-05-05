@@ -1,6 +1,6 @@
 # coding=utf-8
 '''
-NAME:
+NAME:类型
 author:zx弘
 version：1.0
 '''

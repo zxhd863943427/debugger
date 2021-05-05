@@ -23,7 +23,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="debugger_test.py" />
-    <Compile Include="defines\module1.py">
+    <Compile Include="defines\模板 - Copy.py" />
+    <Compile Include="defines\模板.py" />
+    <Compile Include="defines\consist.py" />
+    <Compile Include="defines\main.py" />
+    <Compile Include="defines\debugger_class.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="defines\types.py">
