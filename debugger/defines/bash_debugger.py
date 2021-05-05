@@ -22,6 +22,7 @@ class bash_debugger():
         self.thread_hSnapshot_handle=None
         self.active=False
  ##############################################创建进程###########################################################
+    #已测试
     def load(self,path_to_exe):
             # 实例化结构体
             startupinfo =               STARTUPINFO()
@@ -43,17 +44,17 @@ class bash_debugger():
                 
 ##############################################获取各种句柄的各种方法###########################################################
     
-    #获取线程句柄
+    #获取线程句柄     已测试
     def get_thread_handle(self,TID,dwDesiredAccess=THREAD_ALL_ACCESS):
         handle=kernel32.OpenThread(dwDesiredAccess,False,TID)
         return handle
 
-    #获取进程句柄
+    #获取进程句柄     已测试
     def get_process_handle(self,PID,dwDesiredAccess=PROCESS_ALL_ACCESS):
         handle=kernel32.OpenProcess(dwDesiredAccess,False,PID)
         return handle
     
-    #获取快照句柄
+    #获取快照句柄     已测试
     def get_hSnapshot_handle(self,dwFlags,th32ProcessID):
         handle=kernel32.CreateToolhelp32Snapshot(dwFlags,th32ProcessID)
         return handle
@@ -62,9 +63,9 @@ class bash_debugger():
 
 ##############################################获取各种调试结构体的各种方法###########################################################
 
-    #捕获调试结果并返回一个储存调试信息的结构体
+    #捕获调试结果并返回一个储存调试信息的结构体      已测试
     def wait(self,dwMilliseconds=INFINITE,DebugEvent=DEBUG_EVENT()):
-        DebugEvent = DEBUG_EVENT()
+        #DebugEvent = DEBUG_EVENT()
         output=kernel32.WaitForDebugEventEx(byref(DebugEvent),dwMilliseconds)
         #print(output)
         #print(dir(DebugEvent))
@@ -72,16 +73,16 @@ class bash_debugger():
 
 ##############################################对进程的各种方法###########################################################
 
-    #将调试器附加到进程上
+    #将调试器附加到进程上     已测试
     def attach(self,PID):
         attrack=kernel32.DebugActiveProcess(PID)
         return attrack
 
-    #让进程继续
+    #让进程继续              未测试
     def ContinueEvent(self,dwProcessId,dwThreadId,dwContinueStatus=DBG_CONTINUE):
         return kernel32.ContinueDebugEvent(dwProcessId,dwThreadId,dwContinueStatus)
 
-    #停止目标进程的调试器附着
+    #停止目标进程的调试器附着   已测试
     def debugStop(self,dwProcessId):
         output=kernel32.DebugActiveProcessStop(dwProcessId)
         return output
