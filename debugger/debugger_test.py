@@ -7,28 +7,25 @@ print(f'进程句柄为{test.get_process_handle(test.PID)}')
 print('error = ',kernel32.GetLastError())
 print(f'线程句柄为{test.get_thread_handle(test.TID)}')
 print('error = ',kernel32.GetLastError())
-print(f'快照句柄为{test.get_hSnapshot_handle(TH32CS_SNAPTHREAD,test.PID)}')
-print('error = ',kernel32.GetLastError())
-a=input('准备退出打开进程')
-test.debugStop(test.PID)
-print('error = ',kernel32.GetLastError())
-a=input('已退出打开进程')
-test.PID=eval(input('注意！PID已偏移，请打开控制台，从新获取PID'))
-a=input('正在附着进程')
-test.attach(test.PID)
-print('error = ',kernel32.GetLastError())
-a=input('已附着进程')
+dic={}
 debug=DEBUG_EVENT()
-print('正在获取进程信息')
-test.wait(INFINITE,debug)
-#kernel32.WaitForDebugEventEx(byref(debug),INFINITE)
-print('error = ',kernel32.GetLastError())
-test.PID=debug.dwProcessId
-test.TID=debug.dwThreadId
-print(f'获取到的PID为{test.PID}，TID为{test.TID}')
-test.ContinueEvent(test.PID,test.TID)
-print('error = ',kernel32.GetLastError())
-a=input('已继续进程')
-test.debugStop(test.PID)
-print('error = ',kernel32.GetLastError())
-a=input('已退出附着进程')
+i=1
+dic={3:'CREATE_PROCESS_DEBUG_EVENT',
+2:'CREATE_THREAD_DEBUG_EVENT',
+1:'ECEPTION_DEBUG_EVENT',
+5:'EIT_PROCESS_DEBUG_EVENT',
+4:'EIT_THREAD_DEBUG_EVENT',
+6:'LOAD_DLL_DEBUG_EVENT',
+8:'OUTPUT_DEBUG_STRING_EVENT',
+9:'RIP_EVENT',
+7:'UNLOAD_DLL_DEBUG_EVENT',
+0:'start'}
+while debug.dwDebugEventCode!=EXIT_PROCESS_DEBUG_EVENT:
+    i+=1
+    print(dic[debug.dwDebugEventCode])
+    test.wait(-1,debug)
+    print('已暂停，即将继续')
+    test.ContinueEvent(debug.dwProcessId,debug.dwThreadId)
+    print(debug.dwDebugEventCode)
+    print('第',i,'次','error = ',kernel32.GetLastError())
+a=input('准备退出……')

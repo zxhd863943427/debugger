@@ -29,15 +29,15 @@ STARTF_USESTDHANDLES =      0x00000100      #调用 hStdInput ， hStdOutput 和
 # 定义WaitForDebugEventEx的参数常量
 INFINITE =                  0xFFFFFFFF
 
-CREATE_PROCESS_DEBUG_EVENT =0x00000003
-CREATE_THREAD_DEBUG_EVENT = 0x00000002
-EXCEPTION_DEBUG_EVENT =     0x00000001
-EXIT_PROCESS_DEBUG_EVENT =  0x00000005
-EXIT_THREAD_DEBUG_EVENT =   0x00000004
-LOAD_DLL_DEBUG_EVENT =      0x00000006
-OUTPUT_DEBUG_STRING_EVENT = 0x00000008
-RIP_EVENT =                 0x00000009
-UNLOAD_DLL_DEBUG_EVENT =    0x00000007
+CREATE_PROCESS_DEBUG_EVENT =0x00000003      #报告创建过程调试事件（包括过程及其主线程）
+CREATE_THREAD_DEBUG_EVENT = 0x00000002      #报告创建线程调试事件
+EXCEPTION_DEBUG_EVENT =     0x00000001      #报告异常调试事件。
+EXIT_PROCESS_DEBUG_EVENT =  0x00000005      #报告退出进程调试事件。
+EXIT_THREAD_DEBUG_EVENT =   0x00000004      #报告退出线程调试事件。
+LOAD_DLL_DEBUG_EVENT =      0x00000006      #报告加载动态链接库（DLL）调试事件。
+OUTPUT_DEBUG_STRING_EVENT = 0x00000008      #报告输出调试字符串调试事件。
+RIP_EVENT =                 0x00000009      #报告RIP调试事件（系统调试错误）。
+UNLOAD_DLL_DEBUG_EVENT =    0x00000007      #报告一个卸载DLL调试事件。
 
 # 定义ContinueDebugEvent的参数常量
 DBG_CONTINUE =              0x00010002      #如果dwThreadId参数指定的线程先前报告了EXCEPTION_DEBUG_EVENT调试事件，则该函数将停止所有异常处理并继续执行该线程，并将该异常标记为已处理。 对于任何其他调试事件，此标志仅继续执行线程。
