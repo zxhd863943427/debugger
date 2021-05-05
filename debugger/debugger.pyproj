@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ea10972f-a1e4-40fd-be9b-c447e163ee96</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>defines\types.py</StartupFile>
+    <StartupFile>debugger_test.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -23,7 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="debugger_test.py" />
-    <Compile Include="defines\模板 - Copy.py" />
+    <Compile Include="defines\bash_debugger.py" />
     <Compile Include="defines\模板.py" />
     <Compile Include="defines\consist.py" />
     <Compile Include="defines\main.py" />

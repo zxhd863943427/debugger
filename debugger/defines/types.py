@@ -13,6 +13,7 @@ from ctypes import sizeof
 from ctypes import POINTER
 from ctypes import WINFUNCTYPE
 from ctypes import windll
+from ctypes import byref
 from ctypes import c_void_p
 from ctypes import c_char
 from ctypes import c_char
@@ -95,6 +96,7 @@ LPDWORD     = POINTER(DWORD)
 LPSDWORD    = POINTER(SDWORD)
 LPULONG     = POINTER(ULONG)
 LPLONG      = POINTER(LONG)
+LPTSTR      = LPWSTR
 PDWORD      = LPDWORD
 PULONG      = LPULONG
 PLONG       = LPLONG
