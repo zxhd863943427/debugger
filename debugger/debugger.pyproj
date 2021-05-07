@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ea10972f-a1e4-40fd-be9b-c447e163ee96</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>debugger_test.py</StartupFile>
+    <StartupFile>debugger_创建进程的寄存器状态获取.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="debugger_test.py" />
+    <Compile Include="debugger_创建进程的寄存器状态获取.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="debugger_主循环.py" />
     <Compile Include="defines\bash_debugger.py" />
     <Compile Include="defines\模板.py" />
     <Compile Include="defines\consist.py" />
