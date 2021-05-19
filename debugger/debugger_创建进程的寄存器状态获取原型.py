@@ -1,6 +1,6 @@
 # coding=utf-8
 '''
-NAME:寄存器状态获取
+NAME:寄存器状态获取原型
 author:zx弘
 version：1.0
 '''
@@ -36,9 +36,30 @@ while DebugEvent.dwDebugEventCode !=5:
     get_error('test.get_hSnapshot_handle')
     get_Snapshot_active=True
     context=CONTEXT()
+    CONTEXT_CONTROL =           0x00100001      #获取
+    CONTEXT_FULL =              0x0010000B
+    CONTEXT_ALL =               0x0010001B
+    CONTEXT_INTEGER =           0x00100002
+    CONTEXT_SEGMENTS =          0x00010004
+    context.ContextFlags=CONTEXT_SEGMENTS
     kernel32.SuspendThread(test.thread_handle)
     test.get_context(test.thread_handle,context)
     get_error('test.get_context')
+    print(f'P1Home的值为: {context. P1Home }')
+    print(f'P2Home的值为: {context. P2Home }')
+    print(f'P3Home的值为: {context. P3Home }')
+    print(f'P4Home的值为: {context. P4Home }')
+    print(f'P5Home的值为: {context. P5Home }')
+    print(f'P6Home的值为: {context. P6Home }')
+    print(f'ContextFlags的值为: {context. ContextFlags }')
+    print(f'MxCsr的值为: {context. MxCsr }')
+    print(f'SegCs的值为: {context. SegCs }')
+    print(f'SegDs的值为: {context. SegDs }')
+    print(f'SegEs的值为: {context. SegEs }')
+    print(f'SegFs的值为: {context. SegFs }')
+    print(f'SegGs的值为: {context. SegGs }')
+    print(f'SegSs的值为: {context. SegSs }')
+    print(f'EFlags的值为: {context. EFlags }')
     print(f'Dr0的值为:{context.Dr0}')
     print(f'Dr1的值为:{context.Dr1}')
     print(f'Dr2的值为:{context.Dr2}')
@@ -62,7 +83,9 @@ while DebugEvent.dwDebugEventCode !=5:
     print(f'R14的值为:{context.R14}')
     print(f'R15的值为:{context.R15}')
     print(f'Rip的值为:{context.Rip}') 
+    print(context)
     test.ContinueEvent(test.PID,test.TID)
     kernel32.ResumeThread(test.thread_handle)
     print(dic[DebugEvent.dwDebugEventCode])
     get_error('test.ContinueEvent')
+kernel32.SuspendThread(test.thread_handle)

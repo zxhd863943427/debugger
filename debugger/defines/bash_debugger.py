@@ -57,6 +57,7 @@ class bash_debugger():
     #获取快照句柄     已测试
     def get_hSnapshot_handle(self,dwFlags,th32ProcessID):
         handle=kernel32.CreateToolhelp32Snapshot(dwFlags,th32ProcessID)
+        # DWORD dwFlags
         return handle
 
     
