@@ -96,38 +96,67 @@ class debugger(bash_debugger):
                 list1.append(h_thread)
         return list1
     
-    def get_thread_context_new(self):
-        from defines.bash_debugger import bash_debugger,kernel32
-        from defines.debugger_class import DEBUG_EVENT,CONTEXT
-        from defines.consist import TH32CS_SNAPTHREAD
-        dic={3:'CREATE_PROCESS_DEBUG_EVENT',
-        2:'CREATE_THREAD_DEBUG_EVENT',
-        1:'ECEPTION_DEBUG_EVENT',
-        5:'EIT_PROCESS_DEBUG_EVENT',
-        4:'EIT_THREAD_DEBUG_EVENT',
-        6:'LOAD_DLL_DEBUG_EVENT',
-        8:'OUTPUT_DEBUG_STRING_EVENT',
-        9:'RIP_EVENT',
-        7:'UNLOAD_DLL_DEBUG_EVENT',
-        0:'start'}
-        DebugEvent=DEBUG_EVENT()
-        while DebugEvent.dwDebugEventCode !=5:
-            self.wait(-1,DebugEvent)
-            self.PID=DebugEvent.dwProcessId
-            self.TID=DebugEvent.dwThreadId
-            self.thread_handle=self.get_thread_handle(self.TID)
-            self.thread_hSnapshot_handle=self.get_hSnapshot_handle(TH32CS_SNAPTHREAD,self.PID)
-            get_Snapshot_active=True
-            context=CONTEXT()
-            CONTEXT_CONTROL =           0x00100001      #获取
-            CONTEXT_FULL =              0x0010000B
-            CONTEXT_ALL =               0x0010001B
-            CONTEXT_INTEGER =           0x00100002
-            CONTEXT_SEGMENTS =          0x00010004
-            context.ContextFlags=CONTEXT_FULL
-            kernel32.SuspendThread(self.thread_handle)
-            self.get_context(self.thread_handle,context)
+
+
+    def get_thread_context(self,PID=None,TID=None,context=None,ContextFlags=CONTEXT_ALL):
+        '''
+        CONTEXT_CONTROL =           0x00100001      #获取调试寄存器的值
+        CONTEXT_FULL =              0x0010000B      #获取所有寄存器的值
+        CONTEXT_ALL =               0x0010001B      #获取所有寄存器的值
+        CONTEXT_INTEGER =           0x00100002      #获取通用寄存器的值
+        CONTEXT_SEGMENTS =          0x00010004      #获取Seg寄存器的值————暂时不知道是什么东西        
+        '''
+        if PID == None:
+            if self.PID !=None:
+                PID = self.PID
+            else:
+                print("在无参数输入的的情况下未从结构体本身读取到程序PID")
+                return -1
+
+        if TID == None:
+            if self.TID !=None:
+                TID = self.TID
+            else:
+                print("在无参数输入的的情况下未从结构体本身读取到程序TID")
+                return -2
+
+        if context == None:
+            if self.context !=None:                
+                context = self.context            
+            else:
+                print("在无参数输入的的情况下未从结构体本身读取到输出结构体")
+                return -3
+
+                
+        context.ContextFlags=ContextFlags
+        thread_handle = self.get_thread_handle(TID)
+        #print('self.get_thread_handle','error = ',kernel32.GetLastError())
+        kernel32.SuspendThread(thread_handle)
+        #print('kernel32.SuspendThread','error = ',kernel32.GetLastError())
+        self.get_context(thread_handle,context)            
+        #print('self.get_context','error = ',kernel32.GetLastError())
+        #self.ContinueEvent(PID,TID)
+        #print('self.ContinueEvent','error = ',kernel32.GetLastError())
+        kernel32.ResumeThread(thread_handle)
+        #print('kernel32.ResumeThread','error = ',kernel32.GetLastError())
+        kernel32.CloseHandle(thread_handle)
+        #print('kernel32.CloseHandle','error = ',kernel32.GetLastError())
+
+        return context
+
+
             
+
+
+    # 输出上下文信息
+    def print_context(self, context=None,mode=1):
+        if context ==None:
+            if self.context != None:
+                context = self.context
+            else:
+                print('当前函数未输入参数，而未从结构体获取context结构体')
+                return -1
+        if mode == 1:
             print(f'P1Home的值为: {context. P1Home }')
             print(f'P2Home的值为: {context. P2Home }')
             print(f'P3Home的值为: {context. P3Home }')
@@ -166,23 +195,7 @@ class debugger(bash_debugger):
             print(f'R14的值为:{context.R14}')
             print(f'R15的值为:{context.R15}')
             print(f'Rip的值为:{context.Rip}') 
-            
-            print(context)
-            self.ContinueEvent(self.PID,self.TID)
-            kernel32.ResumeThread(self.thread_handle)
-            print(dic[DebugEvent.dwDebugEventCode])
-
-
-    #获取线程上下文
-    def get_thread_context(self,PID):
-        context=CONTEXT()
-        list1=self.get_thread_all_Snapshot(PID)
-        for item in list1:
-            item=self.get_thread_handle(item)
-            kernel32.SuspendThread(item)
-            self.get_context(item,context)
-            kernel32.ResumeThread(item)
-            kernel32.CloseHandle(item)
+        elif mode == 2:
             print(f'已获取线程句柄为{item}的寄存器信息，正在输出……')
             print(f'Dr0的值为:{context.Dr0}')
             print(f'Dr1的值为:{context.Dr1}')
@@ -206,7 +219,51 @@ class debugger(bash_debugger):
             print(f'R13的值为:{context.R13}')
             print(f'R14的值为:{context.R14}')
             print(f'R15的值为:{context.R15}')
-            print(f'Rip的值为:{context.Rip}')            
+            print(f'Rip的值为:{context.Rip}')
+
+
+    # 仅供查看的完全进程托管模式
+    def get_thread_context_new_only_see(self):
+        from defines.bash_debugger import bash_debugger,kernel32
+        from defines.debugger_class import DEBUG_EVENT,CONTEXT
+        from defines.consist import TH32CS_SNAPTHREAD
+        dic={3:'CREATE_PROCESS_DEBUG_EVENT',
+        2:'CREATE_THREAD_DEBUG_EVENT',
+        1:'ECEPTION_DEBUG_EVENT',
+        5:'EIT_PROCESS_DEBUG_EVENT',
+        4:'EIT_THREAD_DEBUG_EVENT',
+        6:'LOAD_DLL_DEBUG_EVENT',
+        8:'OUTPUT_DEBUG_STRING_EVENT',
+        9:'RIP_EVENT',
+        7:'UNLOAD_DLL_DEBUG_EVENT',
+        0:'start'}
+        DebugEvent=DEBUG_EVENT()
+        while DebugEvent.dwDebugEventCode !=5:
+            self.wait(-1,DebugEvent)
+            self.PID=DebugEvent.dwProcessId
+            self.TID=DebugEvent.dwThreadId
+            self.thread_handle=self.get_thread_handle(self.TID)
+            self.thread_hSnapshot_handle=self.get_hSnapshot_handle(TH32CS_SNAPTHREAD,self.PID)
+            get_Snapshot_active=True
+            context=CONTEXT()
+            CONTEXT_CONTROL =           0x00100001      #获取
+            CONTEXT_FULL =              0x0010000B
+            CONTEXT_ALL =               0x0010001B
+            CONTEXT_INTEGER =           0x00100002
+            CONTEXT_SEGMENTS =          0x00010004
+            context.ContextFlags=CONTEXT_FULL
+            kernel32.SuspendThread(self.thread_handle)
+            self.get_context(self.thread_handle,context)
+            
+            print(f'已获取线程句柄为{self.thread_handle}的寄存器信息，正在输出……')
+            self.print_context(context)
+            
+            print(context)
+            self.ContinueEvent(self.PID,self.TID)
+            kernel32.ResumeThread(self.thread_handle)
+            print(dic[DebugEvent.dwDebugEventCode])
+
+
 
 
 if __name__ =='__main__':
@@ -215,3 +272,4 @@ if __name__ =='__main__':
     a=eval(a)
     test.get_process_handle(PROCESS_ALL_ACCESS,a)
     print(kernel32.GetLastError())
+

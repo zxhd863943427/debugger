@@ -20,7 +20,9 @@ class bash_debugger():
         self.process_handle=None
         self.thread_handle=None
         self.thread_hSnapshot_handle=None
+        self.context=None
         self.active=False
+        
  ##############################################创建进程###########################################################
     #已测试
     def load(self,path_to_exe):

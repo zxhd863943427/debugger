@@ -27,9 +27,6 @@
     </Compile>
     <Compile Include="debugger_主循环.py" />
     <Compile Include="defines\bash_debugger.py" />
-    <Compile Include="debugger1.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="defines\模板.py" />
     <Compile Include="defines\consist.py" />
     <Compile Include="defines\main.py" />
@@ -39,7 +36,6 @@
     <Compile Include="defines\types.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="仿照书本的进程枚举加寄存器状态获取.py" />
     <Compile Include="尝试使用获取上下文模块.py" />
   </ItemGroup>
   <ItemGroup>
