@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ea10972f-a1e4-40fd-be9b-c447e163ee96</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>尝试使用获取上下文模块.py</StartupFile>
+    <StartupFile>建立异常事件处理例程.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -37,6 +37,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="尝试使用获取上下文模块.py" />
+    <Compile Include="建立异常事件处理例程.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="defines\" />

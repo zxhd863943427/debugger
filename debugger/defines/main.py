@@ -196,7 +196,6 @@ class debugger(bash_debugger):
             print(f'R15的值为:{context.R15}')
             print(f'Rip的值为:{context.Rip}') 
         elif mode == 2:
-            print(f'已获取线程句柄为{item}的寄存器信息，正在输出……')
             print(f'Dr0的值为:{context.Dr0}')
             print(f'Dr1的值为:{context.Dr1}')
             print(f'Dr2的值为:{context.Dr2}')

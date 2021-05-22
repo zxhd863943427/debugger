@@ -56,7 +56,11 @@ TH32CS_SNAPMODULE32 =       0x00000010      #从64位进程调用时，包括快
 TH32CS_SNAPPROCESS =        0x00000002      #在快照中包括系统中的所有进程。 要枚举进程，请参阅Process32First。
 TH32CS_SNAPTHREAD =         0x00000004      #在快照中包括系统中的所有线程。 要枚举线程，请参见Thread32First。要标识属于特定进程的线程，请在枚举线程时将其进程标识符与THREADENTRY32结构的th32OwnerProcessID成员进行比较。
 
-
+#定义DEBUG_EVENT的返回常数
+EXCEPTION_BREAKPOINT =      0x80000003      #调试事件为触发断点
+EXCEPTION_ACCESS_VIOLATION =0xC0000005      #线程试图读取或写入对其没有适当访问权限的虚拟地址。
+EXCEPTION_FLT_STACK_CHECK = 0xC0000092      #浮点运算的结果是堆栈上溢或下溢。
+EXCEPTION_STACK_OVERFLOW =  0xC00000FD      #线程耗尽了其堆栈。
 
 #定义获取CONTEXT结构体的ContextFlags参数
 CONTEXT_CONTROL =           0x00100001      #获取调试寄存器的值
@@ -64,3 +68,4 @@ CONTEXT_FULL =              0x0010000B      #获取所有寄存器的值
 CONTEXT_ALL =               0x0010001B      #获取所有寄存器的值
 CONTEXT_INTEGER =           0x00100002      #获取通用寄存器的值
 CONTEXT_SEGMENTS =          0x00010004      #获取Seg寄存器的值————暂时不知道是什么东西
+

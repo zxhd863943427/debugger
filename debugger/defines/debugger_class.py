@@ -54,27 +54,63 @@ class PROCESS_INFORMATION(Structure):
 
 
 # 定义WaitForDebugEvent()所需联合体和结构体
+#定义调试事件信息结构体
+
+class EXCEPTION_RECORD(Structure):
+    _fields_=[
+        ('ExceptionCode',DWORD),
+        ('ExceptionFlags',DWORD),
+        ('ExceptionRecord',DWORD),
+        ('ExceptionAddress',PVOID),
+        ('NumberParameters',DWORD),
+        ('ExceptionInformation',ULONG),            
+    ]
+
+class EXCEPTION_RECORD(Structure):
+    '''
+        ('ExceptionCode',DWORD),        #发生异常的原因。常量已在consist模块定义
+        ('ExceptionFlags',DWORD),       #异常标志。 该成员可以为零，表示可连续的异常
+        ('ExceptionRecord',EXCEPTION_RECORD),#指向关联的指针 EXCEPTION_RECORD 结构。以在发生嵌套异常时提供其他信息
+        ('ExceptionAddress',PVOID),     #发生异常的地址。
+        ('NumberParameters',DWORD),     #与异常关联的参数数。 
+        ('ExceptionInformation',ULONG), #一组描述异常的附加参数。当异常为EXCEPTION_ACCESS_VIOLATION时，数组的第一个元素包含一个读写标志，该标志指示导致访问冲突的操作类型。 如果该值为零，则线程尝试读取不可访问的数据。 如果该值为1，则线程尝试写入不可访问的地址。第二个数组元素指定不可访问数据的虚拟地址。           
+        '''
+    _fields_=[
+        ('ExceptionCode',DWORD),        #发生异常的原因。常量已在consist模块定义
+        ('ExceptionFlags',DWORD),       #异常标志。 该成员可以为零，表示可连续的异常
+        ('ExceptionRecord',EXCEPTION_RECORD),#指向关联的指针 EXCEPTION_RECORD 结构。以在发生嵌套异常时提供其他信息
+        ('ExceptionAddress',PVOID),     #发生异常的地址。
+        ('NumberParameters',DWORD),     #与异常关联的参数。 
+        ('ExceptionInformation',ULONG), #一组描述异常的附加参数。当异常为EXCEPTION_ACCESS_VIOLATION时，数组的第一个元素包含一个读写标志，该标志指示导致访问冲突的操作类型。 如果该值为零，则线程尝试读取不可访问的数据。 如果该值为1，则线程尝试写入不可访问的地址。第二个数组元素指定不可访问数据的虚拟地址。           
+    ]
+#
+class EXCEPTION_DEBUG_INFO(Structure):
+    _fields_=[
+        ('ExceptionRecord',EXCEPTION_RECORD),#一个 EXCEPTION_RECORD 结构，包括异常代码，标志，地址，指向相关异常的指针，其他参数等。
+        ('dwFirstChance',DWORD),        #一个值，指示调试器是否遇到指定的 ExceptionRecord异常成员，果 dwFirstChance 成员非零，则这是调试器第一次遇到该异常。 
+    ]
+
 # 定义DEBUG_EVENT_UNION联合体
 class DEBUG_EVENT_UNION(Union):
     _fields_=[
-        ('Exception',HANDLE),
-        ('CreateThread',HANDLE),
-        ('CreateProcessInfo',HANDLE),
-        ('ExitThread',HANDLE),
-        ('ExitProcess',HANDLE),
-        ('LoadDll',HANDLE),
-        ('UnloadDll',HANDLE),
-        ('DebugString',HANDLE),
+        ('Exception',EXCEPTION_DEBUG_INFO),#触发异常调试事件
+        ('CreateThread',HANDLE),        #创建线程
+        ('CreateProcessInfo',HANDLE),   #创建进程
+        ('ExitThread',HANDLE),          #退出线程
+        ('ExitProcess',HANDLE),         #退出进程
+        ('LoadDll',HANDLE),             #加载DLL
+        ('UnloadDll',HANDLE),           #卸载DLL
+        ('DebugString',HANDLE),         
         ('RipInfo',HANDLE),
     ]
 
 # 定义DEBUG_EVENT结构体
 class DEBUG_EVENT(Structure):
     _fields_=[
-        ('dwDebugEventCode',DWORD),
-        ('dwProcessId',DWORD),
-        ('dwThreadId',DWORD),
-        ('u',DEBUG_EVENT_UNION),
+        ('dwDebugEventCode',DWORD),     #调试事件的代码
+        ('dwProcessId',DWORD),          #被调试程序的PID
+        ('dwThreadId',DWORD),           #被调试程序的TID
+        ('u',DEBUG_EVENT_UNION),        #调试事件的进一步详情，其具体由调试事件代码而定
     ]
 
 # 定义Thread32First()所需结构体
