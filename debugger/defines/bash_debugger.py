@@ -21,6 +21,10 @@ class bash_debugger():
         self.thread_handle=None
         self.thread_hSnapshot_handle=None
         self.context=None
+        self.debug_event=None
+        self.ExceptionAddress=None
+        self.ExceptionInformation=None
+        self.dwFirstChance=None
         self.active=False
         
  ##############################################创建进程###########################################################

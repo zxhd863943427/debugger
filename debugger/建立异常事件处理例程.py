@@ -4,8 +4,11 @@ NAME建立异常事件处理例程
 author:zx弘
 version：1.0
 '''
-from defines.bash_debugger import *
-test=bash_debugger()
+from defines.main import debugger
+from defines.bash_debugger import kernel32
+from defines.consist import *
+from defines.debugger_class import *
+test=debugger()
 test.load(r'C:\Users\admin\Desktop\calc.exe')
 print('error = ',kernel32.GetLastError())
 #print('正在获取进程句柄')
@@ -44,20 +47,15 @@ dic1={
 i=1
 while debug.dwDebugEventCode!=EXIT_PROCESS_DEBUG_EVENT and i <=200:
     i+=1
+    debug=DEBUG_EVENT()
     test.wait(-1,debug)
     print(dic[debug.dwDebugEventCode])
     print(debug.dwDebugEventCode)
-    if debug.dwDebugEventCode == EXCEPTION_DEBUG_EVENT:
-        news = debug.u.Exception.ExceptionRecord
-        print(dic1[news.ExceptionCode])
-        print('异常地址为：',news.ExceptionAddress)
-        
-        print('error = ',kernel32.GetLastError())
 
-        a=input('捕获异常调试事件！请继续……')
-        
+    test.exception_do(debug)  
     print('已暂停，即将继续')
-    test.ContinueEvent(debug.dwProcessId,debug.dwThreadId)
+    print(debug.dwProcessId,debug.dwThreadId)
+    print(kernel32.ContinueDebugEvent(debug.dwProcessId,debug.dwThreadId,DBG_CONTINUE))
     print(debug.dwDebugEventCode)
     print('第',i,'次','error = ',kernel32.GetLastError())
     print('*'*70)

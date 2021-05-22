@@ -61,6 +61,8 @@ EXCEPTION_BREAKPOINT =      0x80000003      #调试事件为触发断点
 EXCEPTION_ACCESS_VIOLATION =0xC0000005      #线程试图读取或写入对其没有适当访问权限的虚拟地址。
 EXCEPTION_FLT_STACK_CHECK = 0xC0000092      #浮点运算的结果是堆栈上溢或下溢。
 EXCEPTION_STACK_OVERFLOW =  0xC00000FD      #线程耗尽了其堆栈。
+EXCEPTION_SINGLE_STEP =     0x80000004      #跟踪陷阱或其他单指令机制表明已执行了一条指令。 
+EXCEPTION_GUARD_PAGE =      0x80000001      #触发内存保护页断点
 
 #定义获取CONTEXT结构体的ContextFlags参数
 CONTEXT_CONTROL =           0x00100001      #获取调试寄存器的值

@@ -1,40 +1,51 @@
-    def get_thread_context_new_only_see(self,PID=None,TID=None,context=None,ContextFlags=CONTEXT_ALL):
+    def exception_do(self,debug_event=None):
         '''
-        CONTEXT_CONTROL =           0x00100001      #获取调试寄存器的值
-        CONTEXT_FULL =              0x0010000B      #获取所有寄存器的值
-        CONTEXT_ALL =               0x0010001B      #获取所有寄存器的值
-        CONTEXT_INTEGER =           0x00100002      #获取通用寄存器的值
-        CONTEXT_SEGMENTS =          0x00010004      #获取Seg寄存器的值————暂时不知道是什么东西        
+        传入一个DEBUG_EVENT结构体，自动分析是否为异常调试事件，若是，再进入异常事件处理例程，并更新主结构的
+        ExceptionAddress、ExceptionInformation、dwFirstChance参数。
+        若使用默认值，则调用结构体自身debug_event属性
         '''
-        if PID == None:
-            if self.PID !=None:
-                PID = self.PID
+        if debug_event == None:
+            if self.debug_event != None:
+                debug_event = self.debug_event
             else:
-                print("在无参数输入的的情况下未从结构体本身读取到程序PID")
-                return -1
+                print('在未输入参数的情况下没有从主结构体中读取到DEBUG_EVENT结构体')
 
-        if TID == None:
-            if self.TID !=None:
-                TID = self.TID
-            else:
-                print("在无参数输入的的情况下未从结构体本身读取到程序TID")
-                return -2
+        from defines.consist import EXCEPTION_DEBUG_EVENT
+        from defines.consist import EXCEPTION_BREAKPOINT
+        from defines.consist import EXCEPTION_ACCESS_VIOLATION
+        from defines.consist import EXCEPTION_FLT_STACK_CHECK
+        from defines.consist import EXCEPTION_STACK_OVERFLOW
+        from defines.consist import EXCEPTION_SINGLE_STEP
+        from defines.consist import EXCEPTION_GUARD_PAGE
 
-        if context == None:
-            if self.context !=None:                
-                context = self.CONTEXT
-            else:
-                print("在无参数输入的的情况下未从结构体本身读取到输出结构体")
-                return -3
 
-                
-        get_Snapshot_active=True
-        context.ContextFlags=ContextFlags
-        thread_handle = self.get_thread_handle(TID)
-        kernel32.SuspendThread(thread_handle)
-        self.get_context(thread_handle,context)            
-        print(context)
-        self.ContinueEvent(PID,TID)
-        kernel32.ResumeThread(thread_handle)
+        if debug_event.dwDebugEventCode != EXCEPTION_DEBUG_EVENT:
 
-        return context
+            return False
+
+        else:
+            self.dwFirstChance = debug_event.u.Exception.dwFirstChance
+            ExceptionRecord = debug_event.u.Exception.ExceptionRecord  #方便后面写
+
+            if ExceptionRecord.ExceptionCode == EXCEPTION_BREAKPOINT:
+                print('调试事件为触发断点')
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)
+
+            if ExceptionRecord.ExceptionCode == EXCEPTION_GUARD_PAGE:
+                print('触发内存保护页断点')
+                print('异常地址为：',ExceptionRecord.ExceptionAddress) 
+
+            if ExceptionRecord.ExceptionCode == EXCEPTION_ACCESS_VIOLATION:
+                print('线程试图读取或写入对其没有适当访问权限的虚拟地址。') 
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)                  
+
+
+            if ExceptionRecord.ExceptionCode == EXCEPTION_FLT_STACK_CHECK:
+                print('浮点运算的结果是堆栈上溢或下溢。') 
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)   
+
+            if ExceptionRecord.ExceptionCode == EXCEPTION_STACK_OVERFLOW:
+                print('线程耗尽了其堆栈。') 
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)   
+
+            a=input('捕获异常调试事件并处理完成！请继续……')
