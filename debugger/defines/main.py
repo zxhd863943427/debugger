@@ -253,6 +253,9 @@ class debugger(bash_debugger):
 
             if ExceptionRecord.ExceptionCode == EXCEPTION_BREAKPOINT:
                 print('调试事件为触发断点')
+                print(ExceptionRecord.ExceptionFlags)
+                print(ExceptionRecord.NumberParameters)
+                print(ExceptionRecord.ExceptionInformation)
                 print('异常地址为：',ExceptionRecord.ExceptionAddress)
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_GUARD_PAGE:

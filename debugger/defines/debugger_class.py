@@ -54,6 +54,16 @@ class PROCESS_INFORMATION(Structure):
 
 
 # 定义WaitForDebugEvent()所需联合体和结构体
+
+#定义输出文本EXCEPTION_DEBUG_INFO结构体
+class OUTPUT_DEBUG_STRING_INFO(Structure):
+    _fields_=[
+       ('lpDebugStringData',LPSTR),
+       ('fUnicode',WORD),
+       ('nDebugStringLength',WORD),
+
+    ]
+
 #定义调试事件信息结构体
 
 class EXCEPTION_RECORD(Structure):
@@ -100,7 +110,7 @@ class DEBUG_EVENT_UNION(Union):
         ('ExitProcess',HANDLE),         #退出进程
         ('LoadDll',HANDLE),             #加载DLL
         ('UnloadDll',HANDLE),           #卸载DLL
-        ('DebugString',HANDLE),         
+        ('DebugString',OUTPUT_DEBUG_STRING_INFO),#调试输出字符串         
         ('RipInfo',HANDLE),
     ]
 

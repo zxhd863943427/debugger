@@ -71,11 +71,16 @@ class bash_debugger():
 ##############################################获取各种调试结构体的各种方法###########################################################
 
     #捕获调试结果并返回一个储存调试信息的结构体      已测试
-    def wait(self,dwMilliseconds=INFINITE,DebugEvent=DEBUG_EVENT()):
+    def wait(self,dwMilliseconds=INFINITE,DebugEvent=DEBUG_EVENT(),mode=0):
+        '''
+        捕获调试结果并返回一个储存调试信息的结构体,可以选择mode=1，来决定是否更新结构体的PID，TID
+        '''
         #DebugEvent = DEBUG_EVENT()
         output=kernel32.WaitForDebugEventEx(byref(DebugEvent),dwMilliseconds)
-        #print(output)
-        #print(dir(DebugEvent))
+
+        if mode == 1:
+            self.PID = DebugEvent.dwProcessId
+            self.TID = DebugEvent.dwThreadId
         return output
 
 ##############################################对进程的各种方法###########################################################
@@ -91,6 +96,19 @@ class bash_debugger():
 
     #停止目标进程的调试器附着   已测试
     def debugStop(self,dwProcessId):
+        '''
+        关闭结构体的进程句柄、线程句柄,然后清除process_handle、thread_handle、PID、TID并退出进程附着
+        '''
+        if self.process_handle !=None:
+            kernel32.CloseHandle(self.process_handle)
+            self.process_handle = None
+        if self.thread_handle !=None:            
+            kernel32.CloseHandle(self.thread_handle)
+            self.thread_handle = None
+        if self.PID !=None:
+            self.PID = None
+        if self.TID !=None:            
+            self.TID = None
         output=kernel32.DebugActiveProcessStop(dwProcessId)
         return output
 
@@ -122,3 +140,6 @@ class bash_debugger():
         tag.dwSize=sizeof(tag)
         output=kernel32.Thread32Next(handle, byref(tag))
         return output
+
+
+##############################################对内存的各种方法###########################################################

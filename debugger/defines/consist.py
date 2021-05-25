@@ -17,6 +17,8 @@ PROCESS_CREATE_THREAD =     0x0002          #创建线程所需
 PROCESS_DUP_HANDLE =        0x0040          #使用DuplicateHandle复制句柄是必需的
 PROCESS_SUSPEND_RESUME =    0x0800          #暂停或恢复过程所需
 SYNCHRONIZE =               0x00100000      #使用wait()函数来等待进程终止是必需的
+PROCESS_VM_READ =           0x0010          #在使用ReadProcessMemory的进程中读取内存所必需。
+PROCESS_VM_WRITE =          0x0020          #在使用WriteProcessMemory的进程中写入内存所必需。
 
 # 定义Dwflags的参数常量
 STARTF_USECOUNTCHARS =      0x00000008      #调用dwXCountChars 和 dwYCountChars的参数。
