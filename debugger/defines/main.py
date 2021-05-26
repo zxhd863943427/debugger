@@ -150,7 +150,11 @@ class debugger(bash_debugger):
 
 
     # 输出上下文信息
-    def print_context(self, context=None,mode=1):
+    def print_context(self, context=None,mode=2):
+        '''
+        输出上下文信息,输入一个CONTEXT结构体，默认输出为精简版信息，
+        可以修改mode=1查看完整版信息
+        '''
         if context ==None:
             if self.context != None:
                 context = self.context
@@ -317,6 +321,28 @@ class debugger(bash_debugger):
             self.ContinueEvent(self.PID,self.TID)
             kernel32.ResumeThread(self.thread_handle)
             print(dic[DebugEvent.dwDebugEventCode])
+
+    def bp_set(self,address,PID):
+        '''
+        设置断点的函数，必选参数有address、PID
+        '''
+
+        # 获取地址的原信息
+        read_handle = self.get_process_handle(PID,PROCESS_VM_READ,mode=0)
+        origin_buf = self.read_process_memory(address,2,read_handle)
+        if not origin_buf:
+            print('获取内存失败，已返回')
+            return False
+        
+        # 写入断点信息
+        write_handle = self.get_process_handle(PID,0x0028,mode=0)
+        if not self.write_process_memory(address, b'H\xcc', write_handle):
+            print('写入断点失败，已返回')
+            return False
+        
+        #更新内存断点列表
+        self.bp_list[address]=b'H\xCC'
+        return True
 
 
 

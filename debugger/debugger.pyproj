@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ea10972f-a1e4-40fd-be9b-c447e163ee96</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>尝试.py</StartupFile>
+    <StartupFile>对内存读取、写入并完成断点.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

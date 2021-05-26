@@ -3,10 +3,11 @@ from defines.main import debugger
 from defines.bash_debugger import kernel32
 from defines.consist import EXIT_PROCESS_DEBUG_EVENT,PROCESS_ALL_ACCESS
 from defines.debugger_class import *
-from ctypes import c_uint32, c_ulong, create_string_buffer
+from ctypes import c_uint32, c_ulong
 import _winapi as win
 
-def read_prcess_memory(handle,adress,length):
+def read_process_memory(adress,length,handle):
+    from ctypes import create_string_buffer
     data = b''
     read_buf = create_string_buffer(length)
     count = 0
@@ -28,7 +29,7 @@ def read_prcess_memory(handle,adress,length):
         return data
 
 
-def write_prcess_memory(handle,adress,data):
+def write_process_memory(adress,data,handle):
     count = 0
     length = 2
 
@@ -51,18 +52,18 @@ def write_prcess_memory(handle,adress,data):
 
 def bp_set(pid,adress):
 
-    handle=test.get_process_handle(pid,0x001F0FFF)
+    handle=test.get_process_handle(pid,0x0010)
 
-    original_byte=read_prcess_memory(handle,adress,36)
-    print('读取的数据为',original_byte)
+    test.read_process_memory(adress,36,handle)
+    #print('读取的数据为',original_byte)
     a = input('继续……')
     # 写入数据
     handle=test.get_process_handle(pid,0x001F0FFF)
     test.write_process_memory(adress,b'H\xcc',handle)
+    
+    #return original_byte
+    return True
 
-    list1 =[(adress,original_byte)]
-    if list1 != None:
-        return list1
 
 
 def resolve_function(dll, func):
@@ -100,14 +101,17 @@ print('第',i,'次','error = ',kernel32.GetLastError())
 
 print('第',i,'次','error = ',kernel32.GetLastError())
 print('地址为：',printf_address)
-
-if bp_set(pid,printf_address):
+handle=test.get_process_handle(pid,0x0010)
+original_byte=test.read_process_memory(printf_address,36,handle)
+print('设置断点前读取的数据为',original_byte)
+if test.bp_set(printf_address,pid):
     print('继续')
 else:
     print('设置断点失败……')
 handle=test.get_process_handle(pid,0x0010)
-original_byte=test.read_process_memory(printf_address,36,handle)
-print('读取的数据为',original_byte)
+original_byte=read_process_memory(printf_address,36,handle)
+
+print('设置断点后读取的数据为',original_byte)
 a=input('准备退出……')
 
 debug = DEBUG_EVENT()
@@ -126,11 +130,12 @@ dic={3:'CREATE_PROCESS_DEBUG_EVENT',
 0:'start'}
 
 
-while debug.dwDebugEventCode!=EXIT_PROCESS_DEBUG_EVENT  and i<=330:
+while debug.dwDebugEventCode!=EXIT_PROCESS_DEBUG_EVENT  and i<=50:
     i+=1
     print(dic[debug.dwDebugEventCode])
     test.wait(-1,debug)
     print('已暂停，即将继续')
+    print('test.wait','error = ',kernel32.GetLastError())
     test.ContinueEvent(debug.dwProcessId,debug.dwThreadId)
     print(debug.dwDebugEventCode)
     print('第',i,'次','error = ',kernel32.GetLastError())
