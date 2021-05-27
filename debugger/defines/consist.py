@@ -65,6 +65,7 @@ EXCEPTION_FLT_STACK_CHECK = 0xC0000092      #浮点运算的结果是堆栈上�
 EXCEPTION_STACK_OVERFLOW =  0xC00000FD      #线程耗尽了其堆栈。
 EXCEPTION_SINGLE_STEP =     0x80000004      #跟踪陷阱或其他单指令机制表明已执行了一条指令。 
 EXCEPTION_GUARD_PAGE =      0x80000001      #触发内存保护页断点
+EXCEPTION_ILLEGAL_INSTRUCTION=0xC000001D    #线程试图执行无效的操作
 
 #定义获取CONTEXT结构体的ContextFlags参数
 CONTEXT_CONTROL =           0x00100001      #获取调试寄存器的值

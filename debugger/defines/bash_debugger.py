@@ -87,6 +87,8 @@ class bash_debugger():
         捕获调试结果并返回一个储存调试信息的结构体,可以选择mode=1，来决定是否更新结构体的PID，TID
         '''
         #DebugEvent = DEBUG_EVENT()
+        kernel32.WaitForDebugEventEx.argtypes=[c_void_p,DWORD]
+        kernel32.WaitForDebugEventEx.restype = BOOL
         output=kernel32.WaitForDebugEventEx(byref(DebugEvent),dwMilliseconds)
 
         if mode == 1:
@@ -106,8 +108,8 @@ class bash_debugger():
 
     #让进程继续              未测试
     def ContinueEvent(self,dwProcessId,dwThreadId,dwContinueStatus=DBG_CONTINUE):
-        kernel32.ContinueDebugEvent.argtypes = [DWORD,DWORD,DWORD]
-        kernel32.ContinueDebugEvent.restype = BOOL
+        #kernel32.ContinueDebugEvent.argtypes = [DWORD,DWORD,DWORD]
+        #kernel32.ContinueDebugEvent.restype = BOOL
         return kernel32.ContinueDebugEvent(dwProcessId,dwThreadId,dwContinueStatus)
 
     #停止目标进程的调试器附着   已测试

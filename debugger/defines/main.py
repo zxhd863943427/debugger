@@ -246,6 +246,7 @@ class debugger(bash_debugger):
         from defines.consist import EXCEPTION_STACK_OVERFLOW
         from defines.consist import EXCEPTION_SINGLE_STEP
         from defines.consist import EXCEPTION_GUARD_PAGE
+        from defines.consist import EXCEPTION_ILLEGAL_INSTRUCTION
 
 
         if debug_event.dwDebugEventCode != EXCEPTION_DEBUG_EVENT:
@@ -265,11 +266,12 @@ class debugger(bash_debugger):
             elif ExceptionRecord.ExceptionCode == EXCEPTION_GUARD_PAGE:
                 print('触发内存保护页断点')
                 print('异常地址为：',ExceptionRecord.ExceptionAddress) 
+                self.recovery_bp(ExceptionRecord.ExceptionAddress)
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_ACCESS_VIOLATION:
                 print('线程试图读取或写入对其没有适当访问权限的虚拟地址。') 
-                print('异常地址为：',ExceptionRecord.ExceptionAddress)                  
-
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)  
+             
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_FLT_STACK_CHECK:
                 print('浮点运算的结果是堆栈上溢或下溢。') 
@@ -277,7 +279,16 @@ class debugger(bash_debugger):
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_STACK_OVERFLOW:
                 print('线程耗尽了其堆栈。') 
-                print('异常地址为：',ExceptionRecord.ExceptionAddress)   
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)
+            elif ExceptionRecord.ExceptionCode == EXCEPTION_ILLEGAL_INSTRUCTION:
+                print('线程试图执行无效的指令') 
+                print('异常地址为：',ExceptionRecord.ExceptionAddress)                   
+            else:
+                print('该事件并非常见错误事件，其代码为',ExceptionRecord.ExceptionCode)
+
+            handle = self.get_process_handle(debug_event.dwProcessId,0x0010,mode=0)
+            buf = self.read_process_memory(ExceptionRecord.ExceptionAddress,48,handle)  
+            print('该地址的内存为：',buf) 
 
             a=input('捕获异常调试事件并处理完成！请继续……')
 
@@ -336,15 +347,19 @@ class debugger(bash_debugger):
         
         # 写入断点信息
         write_handle = self.get_process_handle(PID,0x0028,mode=0)
-        if not self.write_process_memory(address, b'H\xcc', write_handle):
+        if not self.write_process_memory(address, b'\xcc', write_handle):
             print('写入断点失败，已返回')
             return False
         
         #更新内存断点列表
-        self.bp_list[address]=b'H\xCC'
+        self.bp_list[address]=b'\xcc'
         return True
 
+    def recovery_bp(self,address):
 
+        #判断在不在断点列表中
+        if address in self.bp_list:
+            print(True)
 
 
 if __name__ =='__main__':

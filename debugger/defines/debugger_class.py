@@ -65,17 +65,17 @@ class OUTPUT_DEBUG_STRING_INFO(Structure):
     ]
 
 #定义调试事件信息结构体
-
+'''
 class EXCEPTION_RECORD(Structure):
     _fields_=[
         ('ExceptionCode',DWORD),
         ('ExceptionFlags',DWORD),
         ('ExceptionRecord',DWORD),
-        ('ExceptionAddress',PVOID),
+        ('ExceptionAddress',c_void_p),
         ('NumberParameters',DWORD),
         ('ExceptionInformation',ULONG),            
     ]
-
+'''
 class EXCEPTION_RECORD(Structure):
     '''
         ('ExceptionCode',DWORD),        #发生异常的原因。常量已在consist模块定义
@@ -88,7 +88,7 @@ class EXCEPTION_RECORD(Structure):
     _fields_=[
         ('ExceptionCode',DWORD),        #发生异常的原因。常量已在consist模块定义
         ('ExceptionFlags',DWORD),       #异常标志。 该成员可以为零，表示可连续的异常
-        ('ExceptionRecord',EXCEPTION_RECORD),#指向关联的指针 EXCEPTION_RECORD 结构。以在发生嵌套异常时提供其他信息
+        ('ExceptionRecord',PVOID),#指向关联的指针 EXCEPTION_RECORD 结构。以在发生嵌套异常时提供其他信息
         ('ExceptionAddress',PVOID),     #发生异常的地址。
         ('NumberParameters',DWORD),     #与异常关联的参数。 
         ('ExceptionInformation',ULONG), #一组描述异常的附加参数。当异常为EXCEPTION_ACCESS_VIOLATION时，数组的第一个元素包含一个读写标志，该标志指示导致访问冲突的操作类型。 如果该值为零，则线程尝试读取不可访问的数据。 如果该值为1，则线程尝试写入不可访问的地址。第二个数组元素指定不可访问数据的虚拟地址。           

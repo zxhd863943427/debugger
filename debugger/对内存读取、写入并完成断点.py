@@ -14,16 +14,15 @@ a = test.attach(test.PID)
 print('附加的结果是',a)
 print('attach','error = ',kernel32.GetLastError())
 address = test.resolve_function(b'msvcrt.dll',b'printf')
-
+print('函数的地址为：',address)
 pid =test.PID
+
 test.bp_set(address,pid)
-
-
 handle=test.get_process_handle(test.PID,0x0010,mode=0)
 original_byte=test.read_process_memory(address,36,handle)
 print('设置断点前读取的数据为',original_byte)
 
-debug=DEBUG_EVENT()
+
 i=1
 dic={3:'CREATE_PROCESS_DEBUG_EVENT',
 2:'CREATE_THREAD_DEBUG_EVENT',
@@ -35,11 +34,14 @@ dic={3:'CREATE_PROCESS_DEBUG_EVENT',
 9:'RIP_EVENT',
 7:'UNLOAD_DLL_DEBUG_EVENT',
 0:'start'}
+
+debug = DEBUG_EVENT()
+
 while debug.dwDebugEventCode!=EXIT_PROCESS_DEBUG_EVENT and i <=100:
     i+=1
     print(dic[debug.dwDebugEventCode])
     test.wait(-1,debug)
-    #test.exception_do(debug)
+    test.exception_do(debug)
     print('已暂停，即将继续')
     test.ContinueEvent(debug.dwProcessId,debug.dwThreadId)
     print(debug.dwDebugEventCode)
