@@ -262,12 +262,12 @@ class debugger(bash_debugger):
                 print(ExceptionRecord.NumberParameters)
                 print(ExceptionRecord.ExceptionInformation)
                 print('异常地址为：',ExceptionRecord.ExceptionAddress)
+                self.recovery_bp(ExceptionRecord.ExceptionAddress,debug_event.dwProcessId)
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_GUARD_PAGE:
                 print('触发内存保护页断点')
                 print('异常地址为：',ExceptionRecord.ExceptionAddress) 
-                self.recovery_bp(ExceptionRecord.ExceptionAddress)
-
+                
             elif ExceptionRecord.ExceptionCode == EXCEPTION_ACCESS_VIOLATION:
                 print('线程试图读取或写入对其没有适当访问权限的虚拟地址。') 
                 print('异常地址为：',ExceptionRecord.ExceptionAddress)  
@@ -352,13 +352,15 @@ class debugger(bash_debugger):
             return False
         
         #更新内存断点列表
-        self.bp_list[address]=b'\xcc'
+        self.bp_list[address]=origin_buf
         return True
 
-    def recovery_bp(self,address):
+    def recovery_bp(self,address,pid):
 
         #判断在不在断点列表中
         if address in self.bp_list:
+            write_handle = self.get_process_handle(pid,0x0028,mode=0)
+            self.write_process_memory(address, self.bp_list[address], write_handle)
             print(True)
 
 

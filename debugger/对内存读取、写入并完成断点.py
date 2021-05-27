@@ -20,7 +20,7 @@ pid =test.PID
 test.bp_set(address,pid)
 handle=test.get_process_handle(test.PID,0x0010,mode=0)
 original_byte=test.read_process_memory(address,36,handle)
-print('设置断点前读取的数据为',original_byte)
+print('设置断点后读取的数据为',original_byte)
 
 
 i=1
