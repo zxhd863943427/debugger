@@ -74,6 +74,10 @@ class debugger(bash_debugger):
 ##################################################组合高级命令##########################################
     #循环提取全部目标进程
     def get_thread_all_Snapshot(self,PID):
+        '''
+        #循环提取全部目标进程,参数为目标进程的PID，返回一个全部目标进程的线程TID列表
+        '''
+
         #初始化结构体和设置循环状态
         tag=tagTHREADENTRY32()
         active=True
@@ -112,21 +116,21 @@ class debugger(bash_debugger):
                 PID = self.PID
             else:
                 print("在无参数输入的的情况下未从结构体本身读取到程序PID")
-                return -1
+                return False
 
         if TID == None:
             if self.TID !=None:
                 TID = self.TID
             else:
                 print("在无参数输入的的情况下未从结构体本身读取到程序TID")
-                return -2
+                return False
 
         if context == None:
             if self.context !=None:                
                 context = self.context            
             else:
                 print("在无参数输入的的情况下未从结构体本身读取到输出结构体")
-                return -3
+                return False
 
                 
         context.ContextFlags=ContextFlags
@@ -258,11 +262,8 @@ class debugger(bash_debugger):
 
             if ExceptionRecord.ExceptionCode == EXCEPTION_BREAKPOINT:
                 print('调试事件为触发断点')
-                print(ExceptionRecord.ExceptionFlags)
-                print(ExceptionRecord.NumberParameters)
-                print(ExceptionRecord.ExceptionInformation)
                 print('异常地址为：',ExceptionRecord.ExceptionAddress)
-                self.recovery_bp(ExceptionRecord.ExceptionAddress,debug_event.dwProcessId)
+                self.recovery_bp(ExceptionRecord.ExceptionAddress,debug_event.dwProcessId,debug_event.dwThreadId)
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_GUARD_PAGE:
                 print('触发内存保护页断点')
@@ -270,7 +271,8 @@ class debugger(bash_debugger):
                 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_ACCESS_VIOLATION:
                 print('线程试图读取或写入对其没有适当访问权限的虚拟地址。') 
-                print('异常地址为：',ExceptionRecord.ExceptionAddress)  
+                print('异常地址为：',ExceptionRecord.ExceptionAddress) 
+                self.recovery_bp(ExceptionRecord.ExceptionAddress,debug_event.dwProcessId,debug_event.dwThreadId) 
              
 
             elif ExceptionRecord.ExceptionCode == EXCEPTION_FLT_STACK_CHECK:
@@ -355,13 +357,54 @@ class debugger(bash_debugger):
         self.bp_list[address]=origin_buf
         return True
 
-    def recovery_bp(self,address,pid):
+    def bp_hw_set(self,address,length,PID=None,TID = None):
+        '''
+        设置硬件断点,必选参数是设置断点的地址和长度。
+        '''
 
-        #判断在不在断点列表中
+        if PID == None:
+            if self.PID !=None:
+                PID = self.PID
+            else:
+                print("在无参数输入的的情况下未从结构体本身读取到程序PID")
+                return False
+
+        if TID == None:
+            if self.TID !=None:
+                TID = self.TID
+            else:
+                print("在无参数输入的的情况下未从结构体本身读取到程序TID")
+                return False       
+
+        context = CONTEXT()
+        if not self.get_thread_context(PID,TID,context):
+            print()
+        
+        
+
+
+    def recovery_bp(self,address,pid,tid,mode = 0):
+        '''
+        #判断在不在断点列表中,如果是，会进行断点修复和运行位置调整
+        #修改mode为1，可以获得断点线程在断点的寄存器信息
+        '''
         if address in self.bp_list:
             write_handle = self.get_process_handle(pid,0x0028,mode=0)
             self.write_process_memory(address, self.bp_list[address], write_handle)
-            print(True)
+            context = CONTEXT()
+            self.get_thread_context(pid,tid,context)  
+            context.Rip =  address
+            handle = self.get_thread_handle(tid,THREAD_SET_CONTEXT,mode=0)
+            self.set_context(handle,context)       
+            print('捕获设置的断点！现在已恢复')
+
+        if mode == 1:
+            print('输出断点的寄存器信息……')
+            context = CONTEXT()
+            self.get_thread_context(pid,tid,context)
+            self.print_context(context)
+
+            
 
 
 if __name__ =='__main__':

@@ -26,6 +26,7 @@ class bash_debugger():
         self.ExceptionInformation=None
         self.dwFirstChance=None
         self.bp_list = {}
+        self.bp_list_hardware = {}
         self.active=False
         
  ##############################################创建进程###########################################################
@@ -52,8 +53,18 @@ class bash_debugger():
 ##############################################获取各种句柄的各种方法###########################################################
     
     #获取线程句柄     已测试
-    def get_thread_handle(self,TID,dwDesiredAccess=THREAD_ALL_ACCESS):
+    def get_thread_handle(self,TID,dwDesiredAccess=THREAD_ALL_ACCESS,mode=1):
+        """
+        获取线程句柄,并更新主结构体中的thread_handle参数。默认句柄为最大权限模式。将mode改为0
+        可以不更新主结构体中的thread_handle参数
+        """
+        kernel32.OpenThread.argtypes=[DWORD,BOOL,DWORD]
+        kernel32.OpenThread.restype = HANDLE
         handle=kernel32.OpenThread(dwDesiredAccess,False,TID)
+
+        if mode == 1:
+            self.thread_handle = handle
+
         return handle
 
     #获取进程句柄     已测试
@@ -137,6 +148,25 @@ class bash_debugger():
         output=kernel32.GetThreadContext(h_thread,byref(Context))
         #print('*'*100,output)
         return output
+
+    def set_context(self,handle,Context):
+        '''
+        一个写入线程上下文的函数，必须参数是线程的句柄和CONTEXT结构体，线程的
+        句柄必须最少拥有 THREAD_SET_CONTEXT 的权限。该函数会自动关闭句柄
+        '''
+        kernel32.SuspendThread(handle)
+        if not kernel32.SetThreadContext(handle,Context):
+            print('写入线程上下文失败……')
+            kernel32.ResumeThread(handle)
+            kernel32.CloseHandle(handle)
+            return False
+        else:
+            print('写入线程上下文成功！')
+            kernel32.ResumeThread(handle)
+            kernel32.CloseHandle(handle)
+            return True
+
+
 
 
 ##############################################对快照的各种方法###########################################################

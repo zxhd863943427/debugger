@@ -74,3 +74,5 @@ CONTEXT_ALL =               0x0010001B      #获取所有寄存器的值
 CONTEXT_INTEGER =           0x00100002      #获取通用寄存器的值
 CONTEXT_SEGMENTS =          0x00010004      #获取Seg寄存器的值————暂时不知道是什么东西
 
+# 定义设置CONTEXT结构体句柄的参数
+THREAD_SET_CONTEXT =        0x0010          #使用SetThreadContext()函数必须的参数

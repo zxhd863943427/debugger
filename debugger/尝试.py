@@ -1,4 +1,2 @@
-dic = {'a':12}
-
-if 'a' in dic:
-    print(True)
+if not 0:
+    print('1')
